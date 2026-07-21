@@ -9,11 +9,9 @@ PlayerInput ReadPlayerInputs()
 {
     PlayerInput input;
 
-    input.forward = static_cast<float>(IsKeyDown(KEY_W)) -
-                    static_cast<float>(IsKeyDown(KEY_S));
+    input.forward = IsKeyDown(KEY_W) - IsKeyDown(KEY_S);
 
-    input.sideward = static_cast<float>(IsKeyDown(KEY_D)) -
-                     static_cast<float>(IsKeyDown(KEY_A));
+    input.sideward = IsKeyDown(KEY_D) - IsKeyDown(KEY_A);
 
     return input;
 }
@@ -29,7 +27,7 @@ int main()
     camera.position = Vector3{0.0f, 0.5f, 0.0f};
     camera.target = Vector3{1.0f, 0.5f, 1.0f};
     camera.up = Vector3{0.0f, 1.0f, 0.0f};
-    camera.fovy = 60.0f;
+    camera.fovy = 90.0f;
     camera.projection = CAMERA_PERSPECTIVE;
 
     float mapsize = 10.0f;

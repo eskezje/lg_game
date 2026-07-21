@@ -8,6 +8,19 @@ struct PlayerInput
     float sideward = 0.0f;
 };
 
+struct MovementConfig
+{
+    static constexpr float runSpeed = 320.0f / 32.0f;
+    static constexpr float stopSpeed = 100.0f / 32.0f;
+
+    static constexpr float groundAcceleration = 10.0f;
+    static constexpr float airAcceleration = 1.0f;
+    static constexpr float groundFriction = 6.0f;
+
+    static constexpr float gravity = 800.0f / 32.0f;
+    static constexpr float jumpSpeed = 270.0f / 32.0f;
+};
+
 class Player
 {
 public:
@@ -15,11 +28,10 @@ public:
         Vector3 pos = {1.5f, 0.5f, 1.5f},
         float yaw = 0.0f,
         float pitch = 0.0f,
-        float sensitivity = 0.003f,
-        float speed = 2.0f
-    );
+        float sensitivity = 0.003f);
 
     void UpdateLook(Vector2 mouseDelta);
+
     void SimulateMovement(const PlayerInput& input, float deltaTime);
 
     Vector3 GetPosition() const;
@@ -27,8 +39,13 @@ public:
     Vector3 GetVelocity() const;
 
 private:
-    void Accelerate(Vector3 wishDir, float wishSpeed, float acceleration, float deltaTime);
-    void ApplyFriction(float detlaTime);
+    void Accelerate(
+        Vector3 wishDirection,
+        float wishSpeed,
+        float acceleration,
+        float deltaTime);
+
+    void ApplyFriction(float deltaTime);
 
     Vector3 position{};
     Vector3 velocity{};
@@ -36,5 +53,4 @@ private:
     float yaw;
     float pitch;
     float sensitivity;
-    float speed;
 };
