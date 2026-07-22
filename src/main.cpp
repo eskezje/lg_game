@@ -2,6 +2,7 @@
 #include <rlgl.h>
 #include <raymath.h>
 #include <cmath>
+#include <algorithm>
 
 #include "player.hpp"
 
@@ -20,6 +21,12 @@ int main()
 {
     InitWindow(800, 600, "lg Game");
     DisableCursor();
+
+    SetExitKey(KEY_NULL);       // Disable KEY_ESCAPE to close window, X-button still works
+
+    bool exitWindowRequested = false;   // Flag to request window to exit
+    bool exitWindow = false;    // Flag to set window to exit
+
     Player player;
 
     rlSetLineWidth(3.0f);
@@ -32,13 +39,33 @@ int main()
 
     float mapsize = 10.0f;
 
-    while (WindowShouldClose() == false)
+    double accumulation = 0.0f;
+    constexpr double fixedDeltaTime = 1.0f/125.0f;
+
+    while (!exitWindow)
     {
+        if (WindowShouldClose() || IsKeyPressed(KEY_ESCAPE)) exitWindowRequested = true;
+
+        if (exitWindowRequested)
+        {
+            if (IsKeyPressed(KEY_Y)) exitWindow = true;
+            else if (IsKeyPressed(KEY_N)) exitWindowRequested = false;
+            
+        }
+        const float frameTime = std::min(GetFrameTime(),0.25f);
+
+        accumulation = accumulation + frameTime;
+
         const PlayerInput input = ReadPlayerInputs();
 
         player.UpdateLook(GetMouseDelta());
 
-        player.SimulateMovement(input, GetFrameTime());
+        if (accumulation >= fixedDeltaTime)
+        {
+            player.SimulateMovement(input, static_cast<float>(fixedDeltaTime));
+
+            accumulation = accumulation - fixedDeltaTime;
+        }
 
         const Vector3 playerPosition = player.GetPosition();
 
@@ -48,12 +75,12 @@ int main()
         camera.target = Vector3Add(playerPosition, playerDirection);
 
         BeginDrawing();
-
+        
         ClearBackground(SKYBLUE);
         BeginMode3D(camera);
 
         DrawPlane(Vector3{0.0f, -0.01f, 0.0f}, Vector2{mapsize * 2.0f, mapsize * 2.0f}, WHITE);
-        DrawGrid(mapsize * mapsize, 0.2f);
+        DrawGrid(mapsize * mapsize, 1.0f);
 
         EndMode3D();
         
@@ -62,6 +89,13 @@ int main()
         const float horizontalSpeed = std::sqrt(velocity.x * velocity.x + velocity.z * velocity.z);
         DrawText(
         TextFormat("Speed: %.2f", horizontalSpeed), 10, 35, 20, BLACK);
+        DrawText(TextFormat("Position x:%.2f, y:%.2f, z:%.2f", playerPosition.x, playerPosition.y, playerPosition.z), 10, 55, 20, BLACK); 
+
+        if (exitWindowRequested)
+        {
+            DrawRectangle(0, 100, GetScreenWidth(), 200, BLACK);
+            DrawText("Are you sure you want to exit program? [Y/N]", 40, 180, 30, WHITE);
+        }
 
         EndDrawing();
     }

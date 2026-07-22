@@ -56,7 +56,29 @@ void Player::SimulateMovement(const PlayerInput& input, float deltaTime)
         Accelerate(wishDirection, wishSpeed, MovementConfig::groundAcceleration, deltaTime);
     }
 
-    position = Vector3Add( position, Vector3Scale(velocity, deltaTime));
+    const Vector3 potential_position = Vector3Add(position, Vector3Scale(velocity, deltaTime));
+
+    const float max_x = 10.0f;
+    if (potential_position.x < max_x && potential_position.x > -max_x)
+    {
+        position.x = potential_position.x;
+    }
+    else
+    {
+        position.x = std::clamp(potential_position.x, -max_x, max_x);
+    }
+    
+    const float max_z = 10.0f;
+    if (potential_position.z < max_z && potential_position.z > max_z)
+    {
+        position.z = potential_position.z;
+    }
+    else
+    {
+        position.z = std::clamp(potential_position.z, -max_z, max_z);
+    }
+    
+    // position = Vector3Add(position, Vector3Scale(velocity, deltaTime));
 }
 
 void Player::Accelerate(Vector3 wishDirection, float wishSpeed, float acceleration, float deltaTime)

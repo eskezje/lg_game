@@ -43,7 +43,7 @@ private:
         Vector3 wishDirection,
         float wishSpeed,
         float acceleration,
-        float deltaTime);
+        float deltaTime);   
 
     void ApplyFriction(float deltaTime);
 
