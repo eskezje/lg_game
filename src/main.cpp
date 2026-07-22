@@ -1,17 +1,24 @@
 #include <raylib.h>
-#include <rlgl.h>
+#include "rlgl.h"
 #include <raymath.h>
 #include <cmath>
 #include <algorithm>
 
 #include "player.hpp"
+#include "wall_render.hpp"
+
+const Vector3 cube_positions[] = {
+                            {0.0f, 0.0f, 10.06f},
+                            {0.0f, 0.0f, -10.06f},
+                            {10.06f, 0.0f, 0.0f},
+                            {-10.06f, 0.0f, 0.0f}};
+
 
 PlayerInput ReadPlayerInputs()
 {
     PlayerInput input;
 
     input.forward = IsKeyDown(KEY_W) - IsKeyDown(KEY_S);
-
     input.sideward = IsKeyDown(KEY_D) - IsKeyDown(KEY_A);
 
     return input;
@@ -29,7 +36,6 @@ int main()
 
     Player player;
 
-    rlSetLineWidth(3.0f);
     Camera3D camera = {};
     camera.position = Vector3{0.0f, 0.5f, 0.0f};
     camera.target = Vector3{1.0f, 0.5f, 1.0f};
@@ -41,6 +47,26 @@ int main()
 
     double accumulation = 0.0f;
     constexpr double fixedDeltaTime = 1.0f/125.0f;
+
+    Image wall0Image = GenImageGradientLinear(512, 512, 0, DARKBLUE, SKYBLUE);
+    Image wall1Image = GenImageGradientRadial(512, 512, 0.8f, DARKGREEN, GREEN);
+    Image wall2Image = GenImageGradientSquare(512, 512, 0.75f, ORANGE, RED);
+    Image wall3Image = GenImageGradientLinear(512, 512, 90, PURPLE, PINK);
+
+    Texture2D wall0Texture = LoadTextureFromImage(wall0Image);
+    Texture2D wall1Texture = LoadTextureFromImage(wall1Image);
+    Texture2D wall2Texture = LoadTextureFromImage(wall2Image);
+    Texture2D wall3Texture = LoadTextureFromImage(wall3Image);
+
+    UnloadImage(wall0Image);
+    UnloadImage(wall1Image);
+    UnloadImage(wall2Image);
+    UnloadImage(wall3Image);
+
+    if (wall0Texture.id == 0 || wall1Texture.id == 0 || wall2Texture.id == 0 || wall3Texture.id == 0)
+    {
+        TraceLog(LOG_ERROR, "Failed to create one or more wall textures from generated images");
+    }
 
     while (!exitWindow)
     {
@@ -79,9 +105,60 @@ int main()
         ClearBackground(SKYBLUE);
         BeginMode3D(camera);
 
-        DrawPlane(Vector3{0.0f, -0.01f, 0.0f}, Vector2{mapsize * 2.0f, mapsize * 2.0f}, WHITE);
-        DrawGrid(mapsize * mapsize, 1.0f);
+        DrawPlane(Vector3{0.0f, -0.01f, 0.0f}, Vector2{mapsize * 4.0f, mapsize * 4.0f}, WHITE);
+        DrawGrid(mapsize * mapsize, 0.2f);
 
+        constexpr float wallLength = 20.0f;
+        constexpr float wallHeight = 10.0f;
+        constexpr float wallDepth = 0.1f;
+        constexpr float outlineThickness = 0.08f;
+
+
+        const Rectangle wall0Source = Rectangle{0.0f, 0.0f, static_cast<float>(wall0Texture.width), static_cast<float>(wall0Texture.height)};
+        const Rectangle wall1Source = Rectangle{0.0f, 0.0f, static_cast<float>(wall1Texture.width), static_cast<float>(wall1Texture.height)};
+        const Rectangle wall2Source = Rectangle{0.0f, 0.0f, static_cast<float>(wall2Texture.width), static_cast<float>(wall2Texture.height)};
+        const Rectangle wall3Source = Rectangle{0.0f, 0.0f, static_cast<float>(wall3Texture.width), static_cast<float>(wall3Texture.height)};
+
+        DrawCubeTextureRec(wall0Texture, wall0Source, cube_positions[0], wallLength, wallHeight, wallDepth, WHITE);
+        DrawWallOutlineZ(
+            cube_positions[0],
+            wallLength,
+            wallHeight,
+            wallDepth,
+            outlineThickness,
+            BLACK
+        );
+
+        DrawCubeTextureRec(wall0Texture, wall1Source, cube_positions[1], wallLength, wallHeight, wallDepth, WHITE);
+        DrawWallOutlineZ(
+            cube_positions[1],
+            wallLength,
+            wallHeight,
+            wallDepth,
+            outlineThickness,
+            BLACK
+        );
+
+        DrawCubeTextureRec(wall0Texture, wall2Source, cube_positions[2], wallDepth, wallHeight, wallLength, WHITE);
+        DrawWallOutlineX(
+            cube_positions[2],
+            wallDepth,
+            wallHeight,
+            wallLength,
+            outlineThickness,
+            BLACK
+        );
+
+        DrawCubeTextureRec(wall0Texture, wall3Source, cube_positions[3], wallDepth, wallHeight, wallLength, WHITE);
+        DrawWallOutlineX(
+            cube_positions[3],
+            wallDepth,
+            wallHeight,
+            wallLength,
+            outlineThickness,
+            BLACK
+        );
+        
         EndMode3D();
         
         DrawFPS(10, 10);
@@ -100,6 +177,10 @@ int main()
         EndDrawing();
     }
 
+    UnloadTexture(wall0Texture);
+    UnloadTexture(wall1Texture);
+    UnloadTexture(wall2Texture);
+    UnloadTexture(wall3Texture);
     CloseWindow();
     return 0;
 }

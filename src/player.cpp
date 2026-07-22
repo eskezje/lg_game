@@ -9,12 +9,14 @@ Player::Player(
     Vector3 pos,
     float yaw,
     float pitch,
-    float sensitivity)
+    float sensitivity,
+    float radius)
 
     : position(pos),
       yaw(yaw),
       pitch(pitch),
-      sensitivity(sensitivity)
+      sensitivity(sensitivity),
+      playerRadius(radius)
 {
 }
 
@@ -58,24 +60,73 @@ void Player::SimulateMovement(const PlayerInput& input, float deltaTime)
 
     const Vector3 potential_position = Vector3Add(position, Vector3Scale(velocity, deltaTime));
 
-    const float max_x = 10.0f;
-    if (potential_position.x < max_x && potential_position.x > -max_x)
+    const float arena_half_size = 10.0f;
+    const float playerLimit = arena_half_size - playerRadius;
+
+    if (potential_position.x > playerLimit)
+    {
+        position.x = playerLimit;
+        if (velocity.x > 0.0f)
+        {
+            velocity.x = 0.0f;
+        }
+        
+    }
+    else if (potential_position.x < -playerLimit)
+    {
+        position.x = -playerLimit;
+        if (velocity.x > 0.0f)
+        {
+            velocity.x = 0.0f;
+        }
+    }
+    else
+    {
+        position.x = potential_position.x;
+    }
+    
+
+    if (potential_position.z > playerLimit)
+    {
+        position.z = playerLimit;
+        if (velocity.z > 0.0f)
+        {
+            velocity.z = 0.0f;
+        }
+        
+    }
+    else if (potential_position.z < -playerLimit)
+    {
+        position.x = -playerLimit;
+        if (velocity.z > 0.0f)
+        {
+            velocity.z = 0.0f;
+        }
+        
+    }
+    else
+    {
+        position.z = potential_position.z;
+    }
+    
+    
+
+    if (potential_position.x < playerLimit && potential_position.x > -playerLimit)
     {
         position.x = potential_position.x;
     }
     else
     {
-        position.x = std::clamp(potential_position.x, -max_x, max_x);
+        position.x = std::clamp(potential_position.x, -playerLimit, playerLimit);
     }
     
-    const float max_z = 10.0f;
-    if (potential_position.z < max_z && potential_position.z > max_z)
+    if (potential_position.z < playerLimit && potential_position.z > -playerLimit)
     {
         position.z = potential_position.z;
     }
     else
     {
-        position.z = std::clamp(potential_position.z, -max_z, max_z);
+        position.z = std::clamp(potential_position.z, -playerLimit, playerLimit);
     }
     
     // position = Vector3Add(position, Vector3Scale(velocity, deltaTime));

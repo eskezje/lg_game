@@ -28,7 +28,8 @@ public:
         Vector3 pos = {1.5f, 0.5f, 1.5f},
         float yaw = 0.0f,
         float pitch = 0.0f,
-        float sensitivity = 0.003f);
+        float sensitivity = 0.003f,
+        float radius = 0.4f);
 
     void UpdateLook(Vector2 mouseDelta);
 
@@ -53,4 +54,5 @@ private:
     float yaw;
     float pitch;
     float sensitivity;
+    float playerRadius;
 };
