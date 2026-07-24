@@ -367,10 +367,10 @@ rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst 
 SRC_DIR = src
 OBJ_DIR = obj
 
-# Define all object files from source files
-SRC = $(call rwildcard, *.c, *.h)
-#OBJS = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-OBJS ?= main.c
+# Define all C++ source and object files
+SRC := $(wildcard $(SRC_DIR)/*.cpp)
+OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
+DEPS := $(OBJS:.o=.d)
 
 # For Android platform we call a custom Makefile.Android
 ifeq ($(PLATFORM),PLATFORM_ANDROID)
@@ -391,10 +391,13 @@ $(PROJECT_NAME): $(OBJS)
 	$(CC) -o $(PROJECT_NAME)$(EXT) $(OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
 
 # Compile source files
-# NOTE: This pattern will compile every module defined on $(OBJS)
-#%.o: %.c
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) -c $< -o $@ $(CFLAGS) $(INCLUDE_PATHS) -D$(PLATFORM)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	$(CC) -c $< -o $@ $(CFLAGS) $(INCLUDE_PATHS) -D$(PLATFORM) -MMD -MP
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+-include $(DEPS)
 
 # Clean everything
 clean:
@@ -418,4 +421,3 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
 	del *.o *.html *.js
 endif
 	@echo Cleaning done
-

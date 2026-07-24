@@ -15,25 +15,14 @@
                 "command": "C:/raylib/w64devkit/bin/mingw32-make.exe",
                 "args": [
                     "RAYLIB_PATH=C:/raylib/raylib",
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
-                    "OBJS=src/*.cpp",
-                    "BUILD_MODE=DEBUG"
-                ]
-            },
-            "osx": {
-                "args": [
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
-                    "OBJS=src/*.cpp",
                     "BUILD_MODE=DEBUG"
                 ]
             },
             "linux": {
                 "args": [
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
                     "DESTDIR=/home/linuxbrew/.linuxbrew",
                     "RAYLIB_LIBTYPE=SHARED",
                     "EXAMPLE_RUNTIME_PATH=/home/linuxbrew/.linuxbrew/lib",
-                    "OBJS=src/*.cpp",
                     "BUILD_MODE=DEBUG"
                 ]
             },
@@ -55,24 +44,14 @@
             "windows": {
                 "command": "C:/raylib/w64devkit/bin/mingw32-make.exe",
                 "args": [
-                    "RAYLIB_PATH=C:/raylib/raylib",
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
-                    "OBJS=src/*.cpp"
-                ]
-            },
-            "osx": {
-                "args": [
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
-                    "OBJS=src/*.cpp"
+                    "RAYLIB_PATH=C:/raylib/raylib"
                 ]
             },
             "linux": {
                 "args": [
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
                     "DESTDIR=/home/linuxbrew/.linuxbrew",
                     "RAYLIB_LIBTYPE=SHARED",
-                    "EXAMPLE_RUNTIME_PATH=/home/linuxbrew/.linuxbrew/lib",
-                    "OBJS=src/*.cpp"
+                    "EXAMPLE_RUNTIME_PATH=/home/linuxbrew/.linuxbrew/lib"
                 ]
             },
             "problemMatcher": [
