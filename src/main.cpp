@@ -7,6 +7,7 @@
 #include "player.hpp"
 #include "wall_render.hpp"
 #include "renderer.hpp"
+#include "duelenv.hpp"
 
 PlayerInput ReadPlayerInputs()
 {
@@ -20,7 +21,7 @@ PlayerInput ReadPlayerInputs()
 
 int main()
 {
-    InitWindow(1920, 1080, "lg Game");
+    InitWindow(800, 600, "lg Game");
     DisableCursor();
 
     SetExitKey(KEY_NULL);       // Disable KEY_ESCAPE to close window, X-button still works
@@ -28,13 +29,15 @@ int main()
     bool exitWindowRequested = false;   // Flag to request window to exit
     bool exitWindow = false;    // Flag to set window to exit
 
-    Player firstPlayer;
-    Player secondPlayer(Vector3{1.5f, 0.0f, -1.5f});
+    DuelEnvironment duelEnv;
 
-    constexpr float arenaHalfSize = 10.0f;
-    constexpr float arenaWidth = arenaHalfSize * 2.0f;
-    constexpr float wallHeight = 10.0f;
-    constexpr float wallDepth = 0.1f;
+    Player firstPlayer = duelEnv.GetPlayer1();
+    Player secondPlayer = duelEnv.GetPlayer2();
+
+    float arenaHalfSize = duelEnv.ArenaHalfSize;
+    float arenaWidth = arenaHalfSize * 2.0f;
+    float wallHeight = 10.0f;
+    float wallDepth = 0.1f;
 
     Renderer test_renderer;
     test_renderer.Initialize(arenaWidth, wallHeight, wallDepth, arenaHalfSize);

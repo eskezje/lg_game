@@ -59,6 +59,8 @@ public:
     void UpdateGun(Player &secondPlayer, bool triggerHeld, float deltaTime);
     void shoot(Player &secondPlayer);
     void PlayerCollision(Player & secondPlayer);
+    void SetHealth(int health);
+    int GetMaxHealth();
 
 private:
     void Accelerate(

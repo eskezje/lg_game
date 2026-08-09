@@ -292,3 +292,13 @@ void Player::PlayerCollision(Player &secondPlayer)
     
     
 }
+
+void Player::SetHealth(int health)
+{
+    playerHealth = std::clamp(health, 0, maxPlayerHealth);
+}
+
+int Player::GetMaxHealth()
+{
+    return maxPlayerHealth;
+}
