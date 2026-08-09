@@ -2,41 +2,6 @@
 
 #include "rlgl.h"
 
-void DrawWallOutlineZ(
-    Vector3 position,
-    float width,
-    float height,
-    float wallDepth,
-    float outlineThickness,
-    Color color)
-{
-    const float direction = position.z > 0.0f ? -1.0f : 1.0f;
-    const float surfaceZ = position.z + direction * (wallDepth * 0.5f + outlineThickness * 0.5f);
-
-    DrawCube(Vector3{position.x, position.y + height * 0.5f, surfaceZ}, width + outlineThickness, outlineThickness, outlineThickness, color);
-    DrawCube(Vector3{position.x, position.y - height * 0.5f, surfaceZ}, width + outlineThickness, outlineThickness, outlineThickness, color);
-    DrawCube(Vector3{position.x - width * 0.5f, position.y, surfaceZ}, outlineThickness, height, outlineThickness, color);
-    DrawCube(Vector3{position.x + width * 0.5f, position.y, surfaceZ}, outlineThickness, height, outlineThickness, color);
-}
-
-void DrawWallOutlineX(
-    Vector3 position,
-    float wallWidth,
-    float height,
-    float depth,
-    float outlineThickness,
-    Color color)
-{
-    const float direction = position.x > 0.0f ? -1.0f : 1.0f;
-    const float surfaceX = position.x + direction * (wallWidth * 0.5f + outlineThickness * 0.5f);
-
-    DrawCube(Vector3{surfaceX, position.y + height * 0.5f, position.z}, outlineThickness, outlineThickness, depth + outlineThickness, color);
-    DrawCube(Vector3{surfaceX, position.y - height * 0.5f, position.z}, outlineThickness, outlineThickness, depth + outlineThickness, color);
-    DrawCube(Vector3{surfaceX, position.y, position.z - depth * 0.5f}, outlineThickness, height, outlineThickness, color);
-    DrawCube(Vector3{surfaceX, position.y, position.z + depth * 0.5f}, outlineThickness, height, outlineThickness, color);
-}
-
-
 
 // https://www.raylib.com/examples/models/loader.html?name=models_textured_cube
 void DrawCubeTexture(Texture2D texture, Vector3 position, float width, float height, float length, Color color)
