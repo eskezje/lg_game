@@ -140,7 +140,16 @@ void Renderer::RenderPlayer(Player &player)
         bottom.z
     };
 
-    DrawCylinderEx(bottom, top, player.GetRadius(), player.GetRadius(), 16, RED);
+    DrawCylinderEx(bottom, top, player.GetRadius(), player.GetRadius(), 16, LIGHTGRAY);
+
+    Vector3 aimDirection = Vector3Normalize(player.GetDirection());
+    Vector3 gunStart = player.GetPosition();
+    gunStart.y += player.GetHeight()* 0.5f;
+    float gunLength = 0.9f;
+    Vector3 gunEnd = Vector3Add(gunStart, Vector3Scale(aimDirection, gunLength));
+    DrawCylinderEx(gunStart, gunEnd, 0.06f, 0.045f, 8, MAGENTA);
+    DrawSphere(gunEnd, 0.05f, BLACK);
+    DrawLine3D(gunStart, Vector3Add(gunStart, Vector3Scale(aimDirection, 5.0f)), YELLOW);
 }
 
 void Renderer::RenderPlayerHealth(Player &player)

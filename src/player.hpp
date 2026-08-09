@@ -58,6 +58,7 @@ public:
     bool takeDamage(int damageAmount);
     void UpdateGun(Player &secondPlayer, bool triggerHeld, float deltaTime);
     void shoot(Player &secondPlayer);
+    void PlayerCollision(Player & secondPlayer);
 
 private:
     void Accelerate(

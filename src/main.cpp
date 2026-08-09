@@ -20,7 +20,7 @@ PlayerInput ReadPlayerInputs()
 
 int main()
 {
-    InitWindow(800, 600, "lg Game");
+    InitWindow(1920, 1080, "lg Game");
     DisableCursor();
 
     SetExitKey(KEY_NULL);       // Disable KEY_ESCAPE to close window, X-button still works
@@ -70,6 +70,7 @@ int main()
         {
             previousEyePosition = firstPlayer.GetEyePosition();
             firstPlayer.SimulateMovement(input, (float)(fixedDeltaTime), arenaHalfSize);
+            firstPlayer.PlayerCollision(secondPlayer);
             firstPlayer.UpdateGun(secondPlayer, triggerHeld, (float)(fixedDeltaTime));
             
 

@@ -243,3 +243,52 @@ void Player::shoot(Player &secondPlayer)
     }
     
 }
+
+void Player::PlayerCollision(Player &secondPlayer)
+{
+    Vector3 deltaPostion = {
+        secondPlayer.position.x - position.x,
+        0.0f,
+        secondPlayer.position.z - position.z
+    };
+
+    float distanceSquared = deltaPostion.x*deltaPostion.x + deltaPostion.z*deltaPostion.z;
+    const float minimumDistance = playerRadius + secondPlayer.playerRadius;
+
+    if (distanceSquared >= minimumDistance*minimumDistance)
+    {
+        return;
+    }
+
+    float distance = std::sqrt(distanceSquared);
+
+    Vector3 normal = {1.0f, 0.0f, 0.0f};
+
+    if (distance > 0.0001f)
+    {
+        normal = Vector3Scale(deltaPostion, 1.0f/distance);
+    }
+
+    // move each player out by half of the overlap
+    float penetration = minimumDistance - distance;
+    Vector3 correction = Vector3Scale(normal, penetration * 0.5f);
+
+    position =  Vector3Subtract(position, correction);
+    secondPlayer.position = Vector3Add(secondPlayer.position, correction);
+
+    // check if the players are moving toward eachother
+    Vector3 relativeVelocity = Vector3Subtract(secondPlayer.velocity, velocity);
+
+    float closingVelocity = Vector3DotProduct(relativeVelocity, normal);
+
+    if (closingVelocity < 0.0f)
+    {
+        // equal mass, non bouncing collision
+        float impulseMagnitude = -closingVelocity/2.0f;
+        Vector3 impulse = Vector3Scale(normal, impulseMagnitude);
+        velocity = Vector3Subtract(velocity, impulse);
+        secondPlayer.velocity = Vector3Add(secondPlayer.velocity, impulse);
+    }
+    
+    
+}
