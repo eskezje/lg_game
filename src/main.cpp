@@ -40,7 +40,9 @@ int main()
     test_renderer.Initialize(arenaWidth, wallHeight, wallDepth, arenaHalfSize);
 
     double accumulation = 0.0f;
-    constexpr double fixedDeltaTime = 1.0f/1000.0f;
+    constexpr double fixedDeltaTime = 1.0f/125.0f;
+
+    Vector3 previousEyePosition = firstPlayer.GetEyePosition();
 
     while (!exitWindow)
     {
@@ -60,25 +62,27 @@ int main()
         accumulation = accumulation + frameTime;
 
         const PlayerInput input = ReadPlayerInputs();
+        const bool triggerHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 
         firstPlayer.UpdateLook(GetMouseDelta());
 
         while (accumulation >= fixedDeltaTime)
         {
+            previousEyePosition = firstPlayer.GetEyePosition();
             firstPlayer.SimulateMovement(input, (float)(fixedDeltaTime), arenaHalfSize);
-            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
-            {
-                firstPlayer.shoot(secondPlayer);
-            }
+            firstPlayer.UpdateGun(secondPlayer, triggerHeld, (float)(fixedDeltaTime));
             
 
             accumulation = accumulation - fixedDeltaTime;
         }
+        float alpha = (float)(accumulation / fixedDeltaTime);
+        Vector3 renderEyePosition = Vector3Lerp(previousEyePosition, firstPlayer.GetEyePosition(), alpha);
+        
 
         const Vector3 playerPosition = firstPlayer.GetPosition();
         // const Vector3 playerDirection = firstPlayer.GetDirection();
         
-        test_renderer.UpdateCameraPosTar(firstPlayer.GetEyePosition(), firstPlayer.GetDirection());
+        test_renderer.UpdateCameraPosTar(renderEyePosition, firstPlayer.GetDirection());
         
 
         BeginDrawing();

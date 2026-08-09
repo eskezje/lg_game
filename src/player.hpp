@@ -21,6 +21,13 @@ struct MovementConfig
     static constexpr float jumpSpeed = 270.0f / 32.0f;
 };
 
+struct GunConfig
+{
+    static constexpr int damage = 4;
+    static constexpr float tickRate = 40.0f;
+    static constexpr int healingOnHit = 4;
+};
+
 class Player
 {
 public:
@@ -49,6 +56,7 @@ public:
     float GetRadius() const;
     int GetHealth() const;
     bool takeDamage(int damageAmount);
+    void UpdateGun(Player &secondPlayer, bool triggerHeld, float deltaTime);
     void shoot(Player &secondPlayer);
 
 private:
@@ -59,7 +67,7 @@ private:
         float deltaTime);   
 
     void ApplyFriction(float deltaTime);
-    void HealPlayer(int damageDealt);
+    void HealPlayer(int healingAmount);
 
     Vector3 position{};
     Vector3 velocity{};
@@ -70,5 +78,7 @@ private:
     float playerRadius;
     float playerHeight;
     float eyeHeight;
+    float gunCooldown{};
+    int maxPlayerHealth;
     int playerHealth;
 };

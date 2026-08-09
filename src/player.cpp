@@ -22,6 +22,7 @@ Player::Player(
       playerRadius(radius),
       playerHeight(height),
       eyeHeight(lookHeight),
+      maxPlayerHealth(health),
       playerHealth(health)
 {
 }
@@ -125,14 +126,14 @@ void Player::ApplyFriction(float deltaTime)
     velocity.z *= scale;
 }
 
-void Player::HealPlayer(int damageDealt)
+void Player::HealPlayer(int healingAmount)
 {
-    playerHealth += damageDealt;
-    if (playerHealth > 400)
+    if (healingAmount <= 0 || playerHealth <= 0)
     {
-        playerHealth = 400;
+        return;
     }
-    
+
+    playerHealth = std::min(playerHealth + healingAmount, maxPlayerHealth);
 }
 
 Vector3 Player::GetPosition() const
@@ -207,14 +208,38 @@ bool Player::takeDamage(int damageAmount)
     return false;
 }
 
+void Player::UpdateGun(Player &secondPlayer, bool triggerHeld, float deltaTime)
+{
+    gunCooldown -= deltaTime;
+
+    if (!triggerHeld)
+    {
+        gunCooldown = std::max(gunCooldown, 0.0f);
+        return;
+    }
+
+    if (gunCooldown > 0.0f)
+    {
+        return;
+    }
+
+    shoot(secondPlayer);
+    gunCooldown += 1.0f / GunConfig::tickRate;
+}
+
 void Player::shoot(Player &secondPlayer)
 {
+    if (secondPlayer.GetHealth() <= 0)
+    {
+        return;
+    }
+
     const Ray shot{ GetEyePosition(), Vector3Normalize(GetDirection())};
     const RayCollision hit = GetRayCollisionBox(shot, secondPlayer.GetHitbox());
     if (hit.hit)
     {
-        bool killedEnemy = secondPlayer.takeDamage(1);
-        HealPlayer(1);
+        secondPlayer.takeDamage(GunConfig::damage);
+        HealPlayer(GunConfig::healingOnHit);
     }
     
 }

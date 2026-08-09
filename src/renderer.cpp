@@ -6,26 +6,39 @@
 #include <cmath>
 
 void Renderer::Initialize(float wallLength, float wallHeight, float wallDepth, float arena_half_size) {
-    std::array<Image, 4> all_images{};
-    all_images[0] = GenImageGradientLinear(512, 512, 0, DARKBLUE, SKYBLUE);
-    all_images[1] = GenImageGradientRadial(512, 512, 0.8f, DARKGREEN, GREEN);
-    all_images[2] = GenImageGradientSquare(512, 512, 0.75f, ORANGE, RED);
-    all_images[3] = GenImageGradientLinear(512, 512, 90, PURPLE, PINK);
+    //std::array<Image, 4> all_images{};
+    // all_images[0] = GenImageGradientLinear(512, 512, 0, DARKBLUE, SKYBLUE);
+    // all_images[1] = GenImageGradientRadial(512, 512, 0.8f, DARKGREEN, GREEN);
+    // all_images[2] = GenImageGradientSquare(512, 512, 0.75f, ORANGE, RED);
+    // all_images[3] = GenImageGradientLinear(512, 512, 90, PURPLE, PINK);
+    //for (size_t i = 0; i < 4; i++)
+    //{
+    //    all_images[i] = GenImageGradientLinear(512, 512, 0, DARKBLUE, SKYBLUE);
+    //}
+    Image wallImage = GenImageGradientRadial(512, 512, 0.8f, DARKGREEN, GREEN);
+    wallTexture = LoadTextureFromImage(wallImage);
+    UnloadImage(wallImage);
     
-    for (size_t i = 0; i < 4; i++)
-    {
-        wallTextures[i] = LoadTextureFromImage(all_images[i]);
-        UnloadImage(all_images[i]);
-    }
+    
+    //for (size_t i = 0; i < 4; i++)
+    //{
+    //    wallTextures[i] = LoadTextureFromImage(all_images[i]);
+    //    UnloadImage(all_images[i]);
+    //}
 
-    for (int i = 0; i < 4; i++)
+    if (wallTexture.id == 0)
     {
-        if (wallTextures[i].id == 0)
-        {
-            TraceLog(LOG_ERROR, "Failed to create one or more wall textures from generated images");
-        }
-        
+        TraceLog(LOG_ERROR, "Failed to create one or more wall textures from generated images");
     }
+    
+    //for (int i = 0; i < 4; i++)
+    //{
+    //    if (wallTextures[i].id == 0)
+    //    {
+    //        TraceLog(LOG_ERROR, "Failed to create one or more wall textures from generated images");
+    //    }
+    //    
+    //}
 
     camera.position = Vector3{0.0f, 0.5f, 0.0f};
     camera.target = Vector3{1.0f, 0.5f, 1.0f};
@@ -55,10 +68,11 @@ void Renderer::UpdateCameraPosTar(Vector3 position, Vector3 direction){
 
 void Renderer::UnloadRendererTexture()
 {
-    for (size_t i = 0; i < 4; i++)
-    {
-        UnloadTexture(wallTextures[i]);
-    }
+    // for (size_t i = 0; i < 4; i++)
+    //{
+    //    UnloadTexture(wallTextures[i]);
+    //}
+    UnloadTexture(wallTexture);
 }
 
 void Renderer::DrawGridPlane(float arenaHalfSize)
@@ -88,7 +102,7 @@ void Renderer::CreateCubeWalls(float length, float height, float depth)
 
     for (size_t i = 0; i < 4; i++)
     {
-        wallSources[i] = Rectangle{0.0f, 0.0f, (float)(wallTextures[i].width), (float)(wallTextures[i].height)};
+        wallSources[i] = Rectangle{0.0f, 0.0f, (float)(wallTexture.width), (float)(wallTexture.height)};
     }
     
 }
@@ -100,7 +114,7 @@ void Renderer::DrawWalls()
         bool wallOrientation = i < 2;
         float width = wallOrientation ? wallLength : wallDepth;
         float depth = wallOrientation ? wallDepth : wallLength;
-        DrawCubeTextureRec(wallTextures[i], wallSources[i], cubePositions[i], width, wallHeight, depth, WHITE);
+        DrawCubeTextureRec(wallTexture, wallSources[i], cubePositions[i], width, wallHeight, depth, WHITE);
         
     }
     
@@ -131,8 +145,17 @@ void Renderer::RenderPlayer(Player &player)
 
 void Renderer::RenderPlayerHealth(Player &player)
 {
+
     Vector3 textPosition = player.GetPosition();
     textPosition.y += player.GetHeight() + 0.25f;
+
+    const Vector3 cameraForward = Vector3Normalize(Vector3Subtract(camera.target, camera.position));
+
+    const Vector3 directionToPlayer = Vector3Subtract(textPosition, camera.position);
+    if (Vector3DotProduct(cameraForward, directionToPlayer)<= 0.0f) 
+    {
+        return;
+    }
 
     const Vector2 screenPosition = GetWorldToScreen(textPosition, camera);
     const char* healthText = TextFormat("%d HP", player.GetHealth());

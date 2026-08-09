@@ -24,7 +24,8 @@ private:
     float wallDepth{};
     float arenaHalfSize{};
     Camera3D camera{};
-    Texture2D wallTextures[4]{};
+    //Texture2D wallTextures[4]{};
+    Texture2D wallTexture;
     Rectangle wallSources[4]{};
     void UnloadRendererTexture();
 };
