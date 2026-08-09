@@ -28,7 +28,8 @@ int main()
     bool exitWindowRequested = false;   // Flag to request window to exit
     bool exitWindow = false;    // Flag to set window to exit
 
-    Player player;
+    Player firstPlayer;
+    Player secondPlayer(Vector3{1.5f, 0.0f, -1.5f});
 
     float mapsize = 10.0f;
     float wallLength = mapsize*2.0f;
@@ -60,19 +61,25 @@ int main()
 
         const PlayerInput input = ReadPlayerInputs();
 
-        player.UpdateLook(GetMouseDelta());
+        firstPlayer.UpdateLook(GetMouseDelta());
 
         if (accumulation >= fixedDeltaTime)
         {
-            player.SimulateMovement(input, (float)(fixedDeltaTime));
+            firstPlayer.SimulateMovement(input, (float)(fixedDeltaTime));
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+            {
+                firstPlayer.shoot(secondPlayer);
+            }
+            
 
             accumulation = accumulation - fixedDeltaTime;
         }
 
-        const Vector3 playerPosition = player.GetPosition();
-        const Vector3 playerDirection = player.GetDirection();
+        const Vector3 playerPosition = firstPlayer.GetPosition();
+        const Vector3 playerDirection = firstPlayer.GetDirection();
         
-        test_renderer.UpdateCameraPosTar(playerPosition, playerDirection);
+        test_renderer.UpdateCameraPosTar(firstPlayer.GetEyePosition(), firstPlayer.GetDirection());
+        
 
         BeginDrawing();
         
@@ -80,11 +87,14 @@ int main()
         BeginMode3D(test_renderer.GetCamera());
 
         test_renderer.Render();
+        test_renderer.RenderPlayer(secondPlayer);
         
         EndMode3D();
+
+        test_renderer.RenderPlayerHealth(secondPlayer);
         
         DrawFPS(10, 10);
-        const Vector3 velocity = player.GetVelocity();
+        const Vector3 velocity = firstPlayer.GetVelocity();
         const float horizontalSpeed = std::sqrt(velocity.x * velocity.x + velocity.z * velocity.z);
         DrawText(
         TextFormat("Speed: %.2f", horizontalSpeed), 10, 35, 20, BLACK);

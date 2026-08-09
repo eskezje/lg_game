@@ -10,13 +10,19 @@ Player::Player(
     float yaw,
     float pitch,
     float sensitivity,
-    float radius)
+    float radius,
+    float height,
+    float lookHeight,
+    int health)
 
     : position(pos),
       yaw(yaw),
       pitch(pitch),
       sensitivity(sensitivity),
-      playerRadius(radius)
+      playerRadius(radius),
+      playerHeight(height),
+      eyeHeight(lookHeight),
+      playerHealth(health)
 {
 }
 
@@ -192,4 +198,70 @@ Vector3 Player::GetDirection() const
 Vector3 Player::GetVelocity() const
 {
     return velocity;
+}
+
+BoundingBox Player::GetHitbox() const
+{
+    return {
+        Vector3{
+            position.x - playerRadius,
+            position.y,
+            position.z - playerRadius
+        },
+        Vector3{
+            position.x + playerRadius,
+            position.y + playerHeight,
+            position.z + playerRadius
+        }
+    };
+}
+
+Vector3 Player::GetEyePosition() const
+{
+    return Vector3{
+        position.x,
+        position.y + eyeHeight,
+        position.z
+    };
+}
+
+float Player::GetHeight() const
+{
+    return playerHeight;
+}
+
+float Player::GetRadius() const
+{
+    return playerRadius;
+}
+
+int Player::GetHealth() const
+{
+    return playerHealth;
+}
+
+bool Player::takeDamage(int damageAmount)
+{
+    playerHealth -= damageAmount;
+    if (playerHealth <= 0)
+    {
+        playerHealth = 0;
+        return true;
+    }
+    return false;
+}
+
+void Player::shoot(Player &secondPlayer)
+{
+    const Ray shot{ GetEyePosition(), Vector3Normalize(GetDirection())};
+    const RayCollision hit = GetRayCollisionBox(shot, secondPlayer.GetHitbox());
+    if (hit.hit)
+    {
+        if (secondPlayer.takeDamage(7))
+        {
+            printf("player1 wins (just something rightnow, until i deal with death)");
+        }
+        
+    }
+    
 }

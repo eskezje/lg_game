@@ -60,13 +60,6 @@ void Renderer::UnloadRendererTexture()
     }
 }
 
-bool Renderer::IsWallInFront(Vector3 wallPosition)
-{
-    Vector3 cameraForward = Vector3Subtract(camera.target, camera.position);
-    Vector3 cameraToWall = Vector3Subtract(wallPosition, camera.position);
-    return Vector3DotProduct(cameraForward,cameraToWall) > 0.0f;
-}
-
 void Renderer::DrawGridPlane(float mapsize)
 {
     DrawPlane(Vector3{0.0f, -0.01f, 0.0f}, Vector2{mapsize * 4.0f, mapsize * 4.0f}, WHITE);
@@ -117,4 +110,34 @@ void Renderer::Render()
 {
     DrawGridPlane(mapSize);
     DrawWalls();
+}
+
+void Renderer::RenderPlayer(Player &player)
+{
+    Vector3 bottom = player.GetPosition();
+    Vector3 top = Vector3{
+        bottom.x,
+        bottom.y + player.GetHeight(),
+        bottom.z
+    };
+
+    DrawCylinderEx(bottom, top, player.GetRadius(), player.GetRadius(), 16, RED);
+}
+
+void Renderer::RenderPlayerHealth(Player &player)
+{
+    Vector3 textPosition = player.GetPosition();
+    textPosition.y += player.GetHeight() + 0.25f;
+
+    const Vector2 screenPosition = GetWorldToScreen(textPosition, camera);
+    const char* healthText = TextFormat("%d HP", player.GetHealth());
+    constexpr int fontSize = 20;
+    const int textWidth = MeasureText(healthText, fontSize);
+
+    DrawText(
+        healthText,
+        static_cast<int>(screenPosition.x - textWidth / 2.0f),
+        static_cast<int>(screenPosition.y),
+        fontSize,
+        RED);
 }

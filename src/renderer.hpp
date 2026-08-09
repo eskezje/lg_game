@@ -1,6 +1,7 @@
 #pragma once
 #include <raylib.h>
 #include <array>
+#include "player.hpp"
 
 class Renderer
 {
@@ -10,6 +11,8 @@ public:
     Camera3D GetCamera();
     void UpdateCameraPosTar(Vector3 position, Vector3 direction);
     void Render();
+    void RenderPlayer(Player &player);
+    void RenderPlayerHealth(Player &player);
 
 private:
     void DrawGridPlane(float mapsize);
@@ -24,5 +27,4 @@ private:
     Texture2D wallTextures[4]{};
     Rectangle wallSources[4]{};
     void UnloadRendererTexture();
-    bool IsWallInFront(Vector3 wallPosition);
 };

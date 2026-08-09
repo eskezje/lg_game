@@ -25,11 +25,14 @@ class Player
 {
 public:
     Player(
-        Vector3 pos = {1.5f, 0.5f, 1.5f},
+        Vector3 pos = {1.5f, 0.0f, 1.5f},
         float yaw = 0.0f,
         float pitch = 0.0f,
         float sensitivity = 0.003f,
-        float radius = 0.4f);
+        float radius = 0.4f,
+        float height = 1.8f,
+        float lookHeight = 1.6f,
+        int health = 400);
 
     void UpdateLook(Vector2 mouseDelta);
 
@@ -38,6 +41,15 @@ public:
     Vector3 GetPosition() const;
     Vector3 GetDirection() const;
     Vector3 GetVelocity() const;
+
+    BoundingBox GetHitbox() const;
+
+    Vector3 GetEyePosition() const;
+    float GetHeight() const;
+    float GetRadius() const;
+    int GetHealth() const;
+    bool takeDamage(int damageAmount);
+    void shoot(Player &secondPlayer);
 
 private:
     void Accelerate(
@@ -55,4 +67,7 @@ private:
     float pitch;
     float sensitivity;
     float playerRadius;
+    float playerHeight;
+    float eyeHeight;
+    int playerHealth;
 };
