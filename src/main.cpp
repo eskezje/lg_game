@@ -31,8 +31,8 @@ int main()
 
     DuelEnvironment duelEnv;
 
-    Player firstPlayer = duelEnv.GetPlayer1();
-    Player secondPlayer = duelEnv.GetPlayer2();
+    Player& firstPlayer = duelEnv.GetPlayer1();
+    Player& secondPlayer = duelEnv.GetPlayer2();
 
     float arenaHalfSize = duelEnv.ArenaHalfSize;
     float arenaWidth = arenaHalfSize * 2.0f;
@@ -58,6 +58,12 @@ int main()
             if (IsKeyPressed(KEY_Y)) exitWindow = true;
             else if (IsKeyPressed(KEY_N)) exitWindowRequested = false;
             
+        }
+        if (IsKeyPressed(KEY_R))
+        {
+            duelEnv.Reset();
+            previousEyePosition = firstPlayer.GetEyePosition();
+            accumulation = 0.0;
         }
 
         const float frameTime = std::min(GetFrameTime(),0.25f);
@@ -107,6 +113,7 @@ int main()
         DrawText(
         TextFormat("Speed: %.2f", horizontalSpeed), 10, 35, 20, BLACK);
         DrawText(TextFormat("Position x:%.2f, y:%.2f, z:%.2f", playerPosition.x, playerPosition.y, playerPosition.z), 10, 55, 20, BLACK); 
+        DrawText(TextFormat("Press R to reset"), 10, 75, 20, BLACK);
 
         if (exitWindowRequested)
         {
