@@ -125,6 +125,16 @@ void Player::ApplyFriction(float deltaTime)
     velocity.z *= scale;
 }
 
+void Player::HealPlayer(int damageDealt)
+{
+    playerHealth += damageDealt;
+    if (playerHealth > 400)
+    {
+        playerHealth = 400;
+    }
+    
+}
+
 Vector3 Player::GetPosition() const
 {
     return position;

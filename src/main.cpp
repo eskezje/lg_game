@@ -40,7 +40,7 @@ int main()
     test_renderer.Initialize(arenaWidth, wallHeight, wallDepth, arenaHalfSize);
 
     double accumulation = 0.0f;
-    constexpr double fixedDeltaTime = 1.0f/125.0f;
+    constexpr double fixedDeltaTime = 1.0f/1000.0f;
 
     while (!exitWindow)
     {
