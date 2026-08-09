@@ -289,8 +289,6 @@ void Player::PlayerCollision(Player &secondPlayer)
         velocity = Vector3Subtract(velocity, impulse);
         secondPlayer.velocity = Vector3Add(secondPlayer.velocity, impulse);
     }
-    
-    
 }
 
 void Player::SetHealth(int health)

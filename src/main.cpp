@@ -19,6 +19,16 @@ PlayerInput ReadPlayerInputs()
     return input;
 }
 
+DuelAction ReadPlayerAction() {
+        DuelAction playerAction;
+        playerAction.input.forward = IsKeyDown(KEY_W) - IsKeyDown(KEY_S);
+        playerAction.input.sideward = IsKeyDown(KEY_D) - IsKeyDown(KEY_A);
+        playerAction.fire = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
+        playerAction.mouseDelta = GetMouseDelta();
+
+        return playerAction;
+}
+
 int main()
 {
     InitWindow(800, 600, "lg Game");
@@ -57,7 +67,6 @@ int main()
         {
             if (IsKeyPressed(KEY_Y)) exitWindow = true;
             else if (IsKeyPressed(KEY_N)) exitWindowRequested = false;
-            
         }
         if (IsKeyPressed(KEY_R))
         {
@@ -70,17 +79,18 @@ int main()
 
         accumulation = accumulation + frameTime;
 
-        const PlayerInput input = ReadPlayerInputs();
-        const bool triggerHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
-
-        firstPlayer.UpdateLook(GetMouseDelta());
+        // const PlayerInput input = ReadPlayerInputs();
+        // const bool triggerHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
+        // firstPlayer.UpdateLook(GetMouseDelta());
+        DuelAction action1 = ReadPlayerAction();
+        firstPlayer.UpdateLook(action1.mouseDelta);
 
         while (accumulation >= fixedDeltaTime)
         {
             previousEyePosition = firstPlayer.GetEyePosition();
-            firstPlayer.SimulateMovement(input, (float)(fixedDeltaTime), arenaHalfSize);
+            firstPlayer.SimulateMovement(action1.input, (float)(fixedDeltaTime), arenaHalfSize);
             firstPlayer.PlayerCollision(secondPlayer);
-            firstPlayer.UpdateGun(secondPlayer, triggerHeld, (float)(fixedDeltaTime));
+            firstPlayer.UpdateGun(secondPlayer, action1.fire, (float)(fixedDeltaTime));
             
 
             accumulation = accumulation - fixedDeltaTime;

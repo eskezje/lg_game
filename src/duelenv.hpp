@@ -7,10 +7,8 @@
 
 struct DuelAction
 {
-    float forward = 0.0f;
-    float sideward = 0.0f;
-    float turn = 0.0f;
-    float look = 0.0f;
+    PlayerInput input;
+    Vector2 mouseDelta;
     bool fire = false;
 };
 
