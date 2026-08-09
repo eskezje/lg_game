@@ -31,13 +31,13 @@ int main()
     Player firstPlayer;
     Player secondPlayer(Vector3{1.5f, 0.0f, -1.5f});
 
-    float mapsize = 10.0f;
-    float wallLength = mapsize*2.0f;
-    float wallHeight = 10.0f;
-    float wallDepth = 0.1f;
+    constexpr float arenaHalfSize = 10.0f;
+    constexpr float arenaWidth = arenaHalfSize * 2.0f;
+    constexpr float wallHeight = 10.0f;
+    constexpr float wallDepth = 0.1f;
 
     Renderer test_renderer;
-    test_renderer.Initialize(wallLength, wallHeight, wallDepth, mapsize);
+    test_renderer.Initialize(arenaWidth, wallHeight, wallDepth, arenaHalfSize);
 
     double accumulation = 0.0f;
     constexpr double fixedDeltaTime = 1.0f/125.0f;
@@ -63,9 +63,9 @@ int main()
 
         firstPlayer.UpdateLook(GetMouseDelta());
 
-        if (accumulation >= fixedDeltaTime)
+        while (accumulation >= fixedDeltaTime)
         {
-            firstPlayer.SimulateMovement(input, (float)(fixedDeltaTime));
+            firstPlayer.SimulateMovement(input, (float)(fixedDeltaTime), arenaHalfSize);
             if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
             {
                 firstPlayer.shoot(secondPlayer);
@@ -76,7 +76,7 @@ int main()
         }
 
         const Vector3 playerPosition = firstPlayer.GetPosition();
-        const Vector3 playerDirection = firstPlayer.GetDirection();
+        // const Vector3 playerDirection = firstPlayer.GetDirection();
         
         test_renderer.UpdateCameraPosTar(firstPlayer.GetEyePosition(), firstPlayer.GetDirection());
         

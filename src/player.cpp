@@ -36,7 +36,7 @@ void Player::UpdateLook(Vector2 mouseDelta)
     pitch = std::clamp(pitch, -maxPitch, maxPitch);
 }
 
-void Player::SimulateMovement(const PlayerInput& input, float deltaTime)
+void Player::SimulateMovement(const PlayerInput& input, float deltaTime, float arenaHalfSize)
 {
     ApplyFriction(deltaTime);
 
@@ -66,74 +66,20 @@ void Player::SimulateMovement(const PlayerInput& input, float deltaTime)
 
     const Vector3 potential_position = Vector3Add(position, Vector3Scale(velocity, deltaTime));
 
-    const float arena_half_size = 10.0f;
-    const float playerLimit = arena_half_size - playerRadius;
+    const float playerLimit = arenaHalfSize - playerRadius;
 
-    if (potential_position.x > playerLimit)
+    const float clampedX = std::clamp(potential_position.x, -playerLimit, playerLimit);
+    const float clampedZ = std::clamp(potential_position.z, -playerLimit, playerLimit);
+    if (clampedX != potential_position.x)
     {
-        position.x = playerLimit;
-        if (velocity.x > 0.0f)
-        {
-            velocity.x = 0.0f;
-        }
-        
+        velocity.x = 0.0f;
     }
-    else if (potential_position.x < -playerLimit)
+    if (clampedZ != potential_position.z)
     {
-        position.x = -playerLimit;
-        if (velocity.x > 0.0f)
-        {
-            velocity.x = 0.0f;
-        }
+        velocity.z = 0.0f;
     }
-    else
-    {
-        position.x = potential_position.x;
-    }
-    
-
-    if (potential_position.z > playerLimit)
-    {
-        position.z = playerLimit;
-        if (velocity.z > 0.0f)
-        {
-            velocity.z = 0.0f;
-        }
-        
-    }
-    else if (potential_position.z < -playerLimit)
-    {
-        position.x = -playerLimit;
-        if (velocity.z > 0.0f)
-        {
-            velocity.z = 0.0f;
-        }
-        
-    }
-    else
-    {
-        position.z = potential_position.z;
-    }
-    
-    
-
-    if (potential_position.x < playerLimit && potential_position.x > -playerLimit)
-    {
-        position.x = potential_position.x;
-    }
-    else
-    {
-        position.x = std::clamp(potential_position.x, -playerLimit, playerLimit);
-    }
-    
-    if (potential_position.z < playerLimit && potential_position.z > -playerLimit)
-    {
-        position.z = potential_position.z;
-    }
-    else
-    {
-        position.z = std::clamp(potential_position.z, -playerLimit, playerLimit);
-    }
+    position.x = clampedX;
+    position.z = clampedZ;
     
     // position = Vector3Add(position, Vector3Scale(velocity, deltaTime));
 }
@@ -257,11 +203,8 @@ void Player::shoot(Player &secondPlayer)
     const RayCollision hit = GetRayCollisionBox(shot, secondPlayer.GetHitbox());
     if (hit.hit)
     {
-        if (secondPlayer.takeDamage(7))
-        {
-            printf("player1 wins (just something rightnow, until i deal with death)");
-        }
-        
+        bool killedEnemy = secondPlayer.takeDamage(1);
+        HealPlayer(1);
     }
     
 }

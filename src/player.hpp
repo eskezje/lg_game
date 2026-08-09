@@ -36,7 +36,7 @@ public:
 
     void UpdateLook(Vector2 mouseDelta);
 
-    void SimulateMovement(const PlayerInput& input, float deltaTime);
+    void SimulateMovement(const PlayerInput& input, float deltaTime, float arenaHalfSize);
 
     Vector3 GetPosition() const;
     Vector3 GetDirection() const;
@@ -59,6 +59,7 @@ private:
         float deltaTime);   
 
     void ApplyFriction(float deltaTime);
+    void HealPlayer(int damageDealt);
 
     Vector3 position{};
     Vector3 velocity{};

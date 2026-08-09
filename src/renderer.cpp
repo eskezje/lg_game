@@ -3,8 +3,9 @@
 #include "raymath.h"
 #include "wall_render.hpp"
 #include <array>
+#include <cmath>
 
-void Renderer::Initialize(float wallLength, float wallHeight, float wallDepth, float map_size) {
+void Renderer::Initialize(float wallLength, float wallHeight, float wallDepth, float arena_half_size) {
     std::array<Image, 4> all_images{};
     all_images[0] = GenImageGradientLinear(512, 512, 0, DARKBLUE, SKYBLUE);
     all_images[1] = GenImageGradientRadial(512, 512, 0.8f, DARKGREEN, GREEN);
@@ -34,7 +35,7 @@ void Renderer::Initialize(float wallLength, float wallHeight, float wallDepth, f
 
     CreateCubeWalls(wallLength, wallHeight, wallDepth);
 
-    mapSize = map_size;
+    arenaHalfSize = arena_half_size;
 
 }
 
@@ -60,10 +61,14 @@ void Renderer::UnloadRendererTexture()
     }
 }
 
-void Renderer::DrawGridPlane(float mapsize)
+void Renderer::DrawGridPlane(float arenaHalfSize)
 {
-    DrawPlane(Vector3{0.0f, -0.01f, 0.0f}, Vector2{mapsize * 4.0f, mapsize * 4.0f}, WHITE);
-    DrawGrid(mapsize * mapsize, 0.2f);
+    constexpr float gridSpacing = 0.2f;
+    const float arenaWidth = arenaHalfSize * 2.0f;
+    const int gridSlices = static_cast<int>(std::round(arenaWidth / gridSpacing));
+
+    DrawPlane(Vector3{0.0f, -0.01f, 0.0f}, Vector2{arenaWidth, arenaWidth}, WHITE);
+    DrawGrid(gridSlices, gridSpacing);
 }
 
 void Renderer::CreateCubeWalls(float length, float height, float depth)
@@ -75,10 +80,10 @@ void Renderer::CreateCubeWalls(float length, float height, float depth)
     float offset = wallLength / 2.0f + wallDepth / 2.0f;
 
     cubePositions = {
-        Vector3{0.0f, 0.0f, offset},
-        Vector3{0.0f, 0.0f, -offset},
-        Vector3{offset, 0.0f, 0.0f},
-        Vector3{-offset, 0.0f, 0.0f}
+        Vector3{0.0f, wallHeight/2.0f, offset},
+        Vector3{0.0f, wallHeight/2.0f, -offset},
+        Vector3{offset, wallHeight/2.0f, 0.0f},
+        Vector3{-offset, wallHeight/2.0f, 0.0f}
     };
 
     for (size_t i = 0; i < 4; i++)
@@ -108,7 +113,7 @@ void Renderer::DrawWalls()
 
 void Renderer::Render()
 {
-    DrawGridPlane(mapSize);
+    DrawGridPlane(arenaHalfSize);
     DrawWalls();
 }
 
@@ -136,8 +141,8 @@ void Renderer::RenderPlayerHealth(Player &player)
 
     DrawText(
         healthText,
-        static_cast<int>(screenPosition.x - textWidth / 2.0f),
-        static_cast<int>(screenPosition.y),
+        (int)(screenPosition.x - textWidth / 2.0f),
+        (int)(screenPosition.y),
         fontSize,
         RED);
 }

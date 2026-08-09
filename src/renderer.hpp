@@ -6,7 +6,7 @@
 class Renderer
 {
 public:
-    void Initialize(float wallLength, float wallHeight, float wallDepth, float mapSize);
+    void Initialize(float wallLength, float wallHeight, float wallDepth, float arenaHalfSize);
     void Shutdown();
     Camera3D GetCamera();
     void UpdateCameraPosTar(Vector3 position, Vector3 direction);
@@ -15,14 +15,14 @@ public:
     void RenderPlayerHealth(Player &player);
 
 private:
-    void DrawGridPlane(float mapsize);
+    void DrawGridPlane(float arenaHalfSize);
     void DrawWalls();
     void CreateCubeWalls(float wallLength, float wallHeight, float wallDepth);
     std::array<Vector3, 4> cubePositions{};
     float wallLength{};
     float wallHeight{};
     float wallDepth{};
-    float mapSize{};
+    float arenaHalfSize{};
     Camera3D camera{};
     Texture2D wallTextures[4]{};
     Rectangle wallSources[4]{};
