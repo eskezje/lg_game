@@ -24,4 +24,5 @@ private:
     Texture2D wallTextures[4]{};
     Rectangle wallSources[4]{};
     void UnloadRendererTexture();
+    bool IsWallInFront(Vector3 wallPosition);
 };

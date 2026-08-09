@@ -41,18 +41,19 @@ int main()
     double accumulation = 0.0f;
     constexpr double fixedDeltaTime = 1.0f/125.0f;
 
-
-
     while (!exitWindow)
     {
-        if (WindowShouldClose() || IsKeyPressed(KEY_ESCAPE)) exitWindowRequested = true;
-
+        if (WindowShouldClose() || IsKeyPressed(KEY_ESCAPE)) {
+            exitWindowRequested = true;
+        }
+        
         if (exitWindowRequested)
         {
             if (IsKeyPressed(KEY_Y)) exitWindow = true;
             else if (IsKeyPressed(KEY_N)) exitWindowRequested = false;
             
         }
+
         const float frameTime = std::min(GetFrameTime(),0.25f);
 
         accumulation = accumulation + frameTime;
