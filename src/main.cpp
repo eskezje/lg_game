@@ -6,13 +6,7 @@
 
 #include "player.hpp"
 #include "wall_render.hpp"
-#include "render.hpp"
-
-const Vector3 cube_positions[] = {
-                            {0.0f, 0.0f, 10.06f},
-                            {0.0f, 0.0f, -10.06f},
-                            {10.06f, 0.0f, 0.0f},
-                            {-10.06f, 0.0f, 0.0f}};
+#include "renderer.hpp"
 
 PlayerInput ReadPlayerInputs()
 {
@@ -36,15 +30,13 @@ int main()
 
     Player player;
 
-    Camera3D camera = {};
-    Texture2D wall0Texture{};
-    Texture2D wall1Texture{};
-    Texture2D wall2Texture{};
-    Texture2D wall3Texture{};
-
-    render::Initialize(camera, wall0Texture, wall1Texture, wall2Texture, wall3Texture);
-
     float mapsize = 10.0f;
+    float wallLength = mapsize*2.0f;
+    float wallHeight = 10.0f;
+    float wallDepth = 0.1f;
+
+    Renderer test_renderer;
+    test_renderer.Initialize(wallLength, wallHeight, wallDepth, mapsize);
 
     double accumulation = 0.0f;
     constexpr double fixedDeltaTime = 1.0f/125.0f;
@@ -71,39 +63,22 @@ int main()
 
         if (accumulation >= fixedDeltaTime)
         {
-            player.SimulateMovement(input, static_cast<float>(fixedDeltaTime));
+            player.SimulateMovement(input, (float)(fixedDeltaTime));
 
             accumulation = accumulation - fixedDeltaTime;
         }
 
         const Vector3 playerPosition = player.GetPosition();
-
         const Vector3 playerDirection = player.GetDirection();
-
-        camera.position = playerPosition;
-        camera.target = Vector3Add(playerPosition, playerDirection);
+        
+        test_renderer.UpdateCameraPosTar(playerPosition, playerDirection);
 
         BeginDrawing();
         
         ClearBackground(SKYBLUE);
-        BeginMode3D(camera);
+        BeginMode3D(test_renderer.GetCamera());
 
-        DrawPlane(Vector3{0.0f, -0.01f, 0.0f}, Vector2{mapsize * 4.0f, mapsize * 4.0f}, WHITE);
-        DrawGrid(mapsize * mapsize, 0.2f);
-
-        constexpr float wallLength = 20.0f;
-        constexpr float wallHeight = 10.0f;
-        constexpr float wallDepth = 0.1f;
-
-        const Rectangle wall0Source = Rectangle{0.0f, 0.0f, (float)(wall0Texture.width), (float)(wall0Texture.height)};
-        const Rectangle wall1Source = Rectangle{0.0f, 0.0f, (float)(wall1Texture.width), (float)(wall1Texture.height)};
-        const Rectangle wall2Source = Rectangle{0.0f, 0.0f, (float)(wall2Texture.width), (float)(wall2Texture.height)};
-        const Rectangle wall3Source = Rectangle{0.0f, 0.0f, (float)(wall3Texture.width), (float)(wall3Texture.height)};
-
-        DrawCubeTextureRec(wall0Texture, wall0Source, cube_positions[0], wallLength, wallHeight, wallDepth, WHITE);
-        DrawCubeTextureRec(wall1Texture, wall1Source, cube_positions[1], wallLength, wallHeight, wallDepth, WHITE);
-        DrawCubeTextureRec(wall2Texture, wall2Source, cube_positions[2], wallDepth, wallHeight, wallLength, WHITE);
-        DrawCubeTextureRec(wall3Texture, wall3Source, cube_positions[3], wallDepth, wallHeight, wallLength, WHITE);
+        test_renderer.Render();
         
         EndMode3D();
         
@@ -123,10 +98,7 @@ int main()
         EndDrawing();
     }
 
-    UnloadTexture(wall0Texture);
-    UnloadTexture(wall1Texture);
-    UnloadTexture(wall2Texture);
-    UnloadTexture(wall3Texture);
+    test_renderer.Shutdown();
     CloseWindow();
     return 0;
 }
