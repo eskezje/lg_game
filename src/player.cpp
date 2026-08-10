@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include <raylib.h>
 #include <raymath.h>
 
 Player::Player(
@@ -299,4 +300,14 @@ void Player::SetHealth(int health)
 int Player::GetMaxHealth()
 {
     return maxPlayerHealth;
+}
+
+void Player::SetPrevEyePosition()
+{
+    prevEyePosition = GetEyePosition();
+}
+
+Vector3 Player::GetPrevEyePosition()
+{
+    return prevEyePosition;
 }

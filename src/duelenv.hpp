@@ -1,7 +1,6 @@
 #pragma once
 
 #include <random>
-#include <iostream>
 
 #include "player.hpp"
 
@@ -23,12 +22,15 @@ public:
     Player& GetPlayer2();
 
     void Step(
-        const DuelAction& player1Action,
-        const DuelAction& player2Action,
+        DuelAction& player1Action,
+        DuelAction& player2Action,
         float elapsedTime);
 
-private:
+    float GetLerpAlpha();
 
+private:
+    
+    double fixedDeltaTime = 1.0f/125.0f;
     Vector3 RandomSpawnPosition();
 
     Player player1;

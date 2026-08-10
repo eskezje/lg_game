@@ -61,6 +61,8 @@ public:
     void PlayerCollision(Player & secondPlayer);
     void SetHealth(int health);
     int GetMaxHealth();
+    void SetPrevEyePosition();
+    Vector3 GetPrevEyePosition();
 
 private:
     void Accelerate(
@@ -75,6 +77,8 @@ private:
     Vector3 position{};
     Vector3 velocity{};
 
+    Vector3 prevEyePosition{};
+
     float yaw;
     float pitch;
     float sensitivity;
@@ -84,4 +88,6 @@ private:
     float gunCooldown{};
     int maxPlayerHealth;
     int playerHealth;
+
+
 };

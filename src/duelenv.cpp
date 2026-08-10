@@ -30,6 +30,26 @@ void DuelEnvironment::Reset()
     // set players aim to random directions
 }
 
+void DuelEnvironment::Step(DuelAction& player1Action, DuelAction& player2Action, float elapsedTime) {
+    player1.UpdateLook(player1Action.mouseDelta);
+    player2.UpdateLook(player2Action.mouseDelta);
+    accumulatedTime += elapsedTime;
+    while (accumulatedTime >= fixedDeltaTime) {
+        // something eye position 
+        player1.SetPrevEyePosition();
+
+        // SimulateMovement
+        player1.SimulateMovement(player1Action.input, (float)fixedDeltaTime, ArenaHalfSize);
+        player2.SimulateMovement(player2Action.input, (float)fixedDeltaTime, ArenaHalfSize);
+        // update collision
+        player1.PlayerCollision(player2);
+        //players shoot their guns
+        player1.UpdateGun(player2, player1Action.fire, (float)fixedDeltaTime);
+        player2.UpdateGun(player1, player2Action.fire, (float)fixedDeltaTime);
+        accumulatedTime = accumulatedTime - fixedDeltaTime;
+    }
+}
+
 DuelEnvironment::DuelEnvironment()
 {
     Reset();
@@ -54,4 +74,9 @@ Vector3 DuelEnvironment::RandomSpawnPosition()
     spawnPosition.z = dis(gen) * spawnLimit;
     spawnPosition.y = 0.0f;
     return spawnPosition;
+}
+
+float DuelEnvironment::GetLerpAlpha()
+{
+    return (float)(accumulatedTime/fixedDeltaTime);
 }

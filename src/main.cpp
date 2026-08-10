@@ -5,7 +5,6 @@
 #include <algorithm>
 
 #include "player.hpp"
-#include "wall_render.hpp"
 #include "renderer.hpp"
 #include "duelenv.hpp"
 
@@ -52,10 +51,12 @@ int main()
     Renderer test_renderer;
     test_renderer.Initialize(arenaWidth, wallHeight, wallDepth, arenaHalfSize);
 
-    double accumulation = 0.0f;
-    constexpr double fixedDeltaTime = 1.0f/125.0f;
+    // double accumulation = 0.0f;
+    // constexpr double fixedDeltaTime = 1.0f/125.0f;
 
-    Vector3 previousEyePosition = firstPlayer.GetEyePosition();
+    // Vector3 previousEyePosition = firstPlayer.GetEyePosition();
+    firstPlayer.SetPrevEyePosition();
+    secondPlayer.SetPrevEyePosition();
 
     while (!exitWindow)
     {
@@ -71,32 +72,37 @@ int main()
         if (IsKeyPressed(KEY_R))
         {
             duelEnv.Reset();
-            previousEyePosition = firstPlayer.GetEyePosition();
-            accumulation = 0.0;
+            firstPlayer.SetPrevEyePosition();
+            secondPlayer.SetPrevEyePosition();
+            // previousEyePosition = firstPlayer.GetEyePosition();
+            // accumulation = 0.0;
         }
 
         const float frameTime = std::min(GetFrameTime(),0.25f);
 
-        accumulation = accumulation + frameTime;
+        // accumulation = accumulation + frameTime;
 
         // const PlayerInput input = ReadPlayerInputs();
         // const bool triggerHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
         // firstPlayer.UpdateLook(GetMouseDelta());
         DuelAction action1 = ReadPlayerAction();
-        firstPlayer.UpdateLook(action1.mouseDelta);
+        DuelAction action2{};
+        // firstPlayer.UpdateLook(action1.mouseDelta);
+        duelEnv.Step(action1, action2, frameTime);
 
-        while (accumulation >= fixedDeltaTime)
-        {
-            previousEyePosition = firstPlayer.GetEyePosition();
-            firstPlayer.SimulateMovement(action1.input, (float)(fixedDeltaTime), arenaHalfSize);
-            firstPlayer.PlayerCollision(secondPlayer);
-            firstPlayer.UpdateGun(secondPlayer, action1.fire, (float)(fixedDeltaTime));
-            
-
-            accumulation = accumulation - fixedDeltaTime;
-        }
-        float alpha = (float)(accumulation / fixedDeltaTime);
-        Vector3 renderEyePosition = Vector3Lerp(previousEyePosition, firstPlayer.GetEyePosition(), alpha);
+        // while (accumulation >= fixedDeltaTime)
+        // {
+        //     firstPlayer.SetPrevEyePosition();
+        //     // previousEyePosition = firstPlayer.GetEyePosition();
+        //     firstPlayer.SimulateMovement(action1.input, (float)(fixedDeltaTime), arenaHalfSize);
+        //     firstPlayer.PlayerCollision(secondPlayer);
+        //     firstPlayer.UpdateGun(secondPlayer, action1.fire, (float)(fixedDeltaTime));
+        //
+        //
+        //     accumulation = accumulation - fixedDeltaTime;
+        // }
+        // float alpha = (float)(accumulation / fixedDeltaTime);
+        Vector3 renderEyePosition = Vector3Lerp(firstPlayer.GetPrevEyePosition(), firstPlayer.GetEyePosition(), duelEnv.GetLerpAlpha());
         
 
         const Vector3 playerPosition = firstPlayer.GetPosition();
