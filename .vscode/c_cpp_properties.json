@@ -23,7 +23,9 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/homebrew/include"
+                "/opt/homebrew/include",
+                "/opt/homebrew/opt/python@3.14/Frameworks/Python.framework/Versions/3.14/include/python3.14",
+                "${workspaceFolder}/.venv/lib/python3.14/site-packages/pybind11/include"
             ],
             "defines": [
                 "_DEBUG",

@@ -21,7 +21,7 @@
 #
 #**************************************************************************************************
 
-.PHONY: all clean
+.PHONY: all clean python-module
 
 # Define required raylib variables
 PROJECT_NAME       ?= game
@@ -375,6 +375,21 @@ OBJ_DIR = obj
 COMMON_SRC := $(SRC_DIR)/duelenv.cpp $(SRC_DIR)/player.cpp
 GAME_SRC := $(SRC_DIR)/main.cpp $(SRC_DIR)/renderer.cpp $(SRC_DIR)/wall_render.cpp $(COMMON_SRC)
 HEADLESS_SRC := $(SRC_DIR)/headless_main.cpp $(COMMON_SRC)
+PYTHON_SRC := $(SRC_DIR)/python_bindings.cpp $(COMMON_SRC)
+
+ifeq ($(PLATFORM_OS),WINDOWS)
+    PYTHON ?= $(if $(wildcard .venv/Scripts/python.exe),.venv/Scripts/python.exe,python)
+    PYTHON_MODULE := $(OBJ_DIR)/duel_env.pyd
+    PYTHON_SHARED_FLAGS := -shared
+else
+    PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
+    PYTHON_MODULE := $(OBJ_DIR)/duel_env.so
+    PYTHON_SHARED_FLAGS := -shared -fPIC
+endif
+
+ifeq ($(PLATFORM_OS),OSX)
+    PYTHON_SHARED_FLAGS += -undefined dynamic_lookup
+endif
 
 GAME_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(GAME_SRC))
 HEADLESS_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(HEADLESS_SRC))
@@ -404,6 +419,12 @@ $(PROJECT_NAME): $(GAME_OBJS)
 
 headless: $(HEADLESS_OBJS)
 	$(CC) -o headless$(EXT) $(HEADLESS_OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
+
+python-module: $(PYTHON_MODULE)
+
+$(PYTHON_MODULE): $(PYTHON_SRC) | $(OBJ_DIR)
+	$(PYTHON) -c "import pybind11"
+	$(CC) $(CFLAGS) $(PYTHON_SHARED_FLAGS) $(shell $(PYTHON) -m pybind11 --includes) $(INCLUDE_PATHS) -D$(PLATFORM) $(PYTHON_SRC) $(LDFLAGS) $(LDLIBS) -o $@
 
 # Compile source files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)

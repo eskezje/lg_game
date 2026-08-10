@@ -4,3 +4,7 @@ main
 game
 headless
 /obj
+.venv/
+*.pyd
+*.so
+__pycache__/
