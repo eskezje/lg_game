@@ -119,13 +119,13 @@ int main()
         
         EndMode3D();
 
-        if (cameraMode != RenderCameraMode::Player1)
-        {
-            test_renderer.RenderPlayerHealth(firstPlayer);
-        }
-        if (cameraMode != RenderCameraMode::Player2)
+        if (cameraMode == RenderCameraMode::Player1)
         {
             test_renderer.RenderPlayerHealth(secondPlayer);
+        }
+        if (cameraMode == RenderCameraMode::Player2)
+        {
+            test_renderer.RenderPlayerHealth(firstPlayer);
         }
         
         DrawFPS(10, 10);
