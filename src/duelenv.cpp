@@ -9,6 +9,18 @@ float spawnLimit = 9.0f;
 float minimumSpawnDistance = 2.0f;
 }
 
+DuelEnvironment::DuelEnvironment()
+    : randomEngine(std::random_device{}())
+{
+    Reset();
+}
+
+DuelEnvironment::DuelEnvironment(unsigned int seed)
+    : randomEngine(seed)
+{
+    Reset();
+}
+
 void DuelEnvironment::Reset()
 {
     // reset player positions to random places, they should not collide with eachother or be too close to eachother
@@ -28,6 +40,12 @@ void DuelEnvironment::Reset()
     player2.SetHealth(player2.GetMaxHealth());
     // set players aim to random directions
     episodeTime = 0.0f;
+}
+
+void DuelEnvironment::Reset(unsigned int seed)
+{
+    randomEngine.seed(seed);
+    Reset();
 }
 
 DuelStepResult DuelEnvironment::Step(DuelAction& player1Action, DuelAction& player2Action, float elapsedTime) {
@@ -73,16 +91,7 @@ DuelStepResult DuelEnvironment::Step(DuelAction& player1Action, DuelAction& play
         result.truncated = true;
     }
     return result;
-    
-    
-    
 
-
-}
-
-DuelEnvironment::DuelEnvironment()
-{
-    Reset();
 }
 
 Player &DuelEnvironment::GetPlayer1()
@@ -98,10 +107,9 @@ Player &DuelEnvironment::GetPlayer2()
 Vector3 DuelEnvironment::RandomSpawnPosition()
 {   
     Vector3 spawnPosition;
-    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-    std::uniform_real_distribution<> dis(-1.0, 1.0);
-    spawnPosition.x = dis(gen) * spawnLimit;
-    spawnPosition.z = dis(gen) * spawnLimit;
+    std::uniform_real_distribution<float> dis(-1.0, 1.0);
+    spawnPosition.x = dis(randomEngine) * spawnLimit;
+    spawnPosition.z = dis(randomEngine) * spawnLimit;
     spawnPosition.y = 0.0f;
     return spawnPosition;
 }

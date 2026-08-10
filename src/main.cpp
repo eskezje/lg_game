@@ -38,7 +38,7 @@ int main()
     bool exitWindowRequested = false;   // Flag to request window to exit
     bool exitWindow = false;    // Flag to set window to exit
 
-    DuelEnvironment duelEnv;
+    DuelEnvironment duelEnv(889);
 
     Player& firstPlayer = duelEnv.GetPlayer1();
     Player& secondPlayer = duelEnv.GetPlayer2();

@@ -24,8 +24,10 @@ class DuelEnvironment
 public:
     float ArenaHalfSize = 10.0f;
     void Reset();
+    void Reset(unsigned int seed);
 
     DuelEnvironment();
+    explicit DuelEnvironment(unsigned int seed);
     Player& GetPlayer1();
     Player& GetPlayer2();
 
@@ -44,6 +46,6 @@ private:
     Player player1;
     Player player2;
     double accumulatedTime = 0.0;
-    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 randomEngine;
     float episodeTime = 0.0f;
 };

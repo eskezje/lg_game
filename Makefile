@@ -368,8 +368,18 @@ SRC_DIR = src
 OBJ_DIR = obj
 
 # Define all C++ source and object files
-SRC := $(wildcard $(SRC_DIR)/*.cpp)
-OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
+# SRC := $(wildcard $(SRC_DIR)/*.cpp)
+# OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
+# DEPS := $(OBJS:.o=.d)
+
+COMMON_SRC := $(SRC_DIR)/duelenv.cpp $(SRC_DIR)/player.cpp
+GAME_SRC := $(SRC_DIR)/main.cpp $(SRC_DIR)/renderer.cpp $(SRC_DIR)/wall_render.cpp $(COMMON_SRC)
+HEADLESS_SRC := $(SRC_DIR)/headless_main.cpp $(COMMON_SRC)
+
+GAME_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(GAME_SRC))
+HEADLESS_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(HEADLESS_SRC))
+
+OBJS := $(sort $(GAME_OBJS) $(HEADLESS_OBJS))
 DEPS := $(OBJS:.o=.d)
 
 # For Android platform we call a custom Makefile.Android
@@ -387,8 +397,13 @@ all:
 	$(MAKE) $(MAKEFILE_PARAMS)
 
 # Project target defined by PROJECT_NAME
-$(PROJECT_NAME): $(OBJS)
-	$(CC) -o $(PROJECT_NAME)$(EXT) $(OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
+# $(PROJECT_NAME): $(OBJS)
+# 	$(CC) -o $(PROJECT_NAME)$(EXT) $(OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
+$(PROJECT_NAME): $(GAME_OBJS)
+	$(CC) -o $(PROJECT_NAME)$(EXT) $(GAME_OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
+
+headless: $(HEADLESS_OBJS)
+	$(CC) -o headless$(EXT) $(HEADLESS_OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM).
 
 # Compile source files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
