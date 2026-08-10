@@ -11,6 +11,14 @@ struct DuelAction
     bool fire = false;
 };
 
+struct DuelStepResult
+{
+    float player1Reward = 0.0f;
+    float player2Reward = 0.0f;
+    bool terminated = false;
+    bool truncated = false;
+};
+
 class DuelEnvironment
 {
 public:
@@ -21,7 +29,7 @@ public:
     Player& GetPlayer1();
     Player& GetPlayer2();
 
-    void Step(
+    DuelStepResult Step(
         DuelAction& player1Action,
         DuelAction& player2Action,
         float elapsedTime);
@@ -37,4 +45,5 @@ private:
     Player player2;
     double accumulatedTime = 0.0;
     std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    float episodeTime = 0.0f;
 };

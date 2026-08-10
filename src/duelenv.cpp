@@ -28,12 +28,18 @@ void DuelEnvironment::Reset()
     player1.SetHealth(player1.GetMaxHealth());
     player2.SetHealth(player2.GetMaxHealth());
     // set players aim to random directions
+    episodeTime = 0.0f;
 }
 
-void DuelEnvironment::Step(DuelAction& player1Action, DuelAction& player2Action, float elapsedTime) {
+DuelStepResult DuelEnvironment::Step(DuelAction& player1Action, DuelAction& player2Action, float elapsedTime) {
+    int player1HealthBefore = player1.GetHealth();
+    int player2HealthBefore = player2.GetHealth();
+    bool wasPlayer2Alive = player2HealthBefore > 0;
+    
     player1.UpdateLook(player1Action.mouseDelta);
     player2.UpdateLook(player2Action.mouseDelta);
     accumulatedTime += elapsedTime;
+    episodeTime += elapsedTime;
     while (accumulatedTime >= fixedDeltaTime) {
         // something eye position 
         player1.SetPrevEyePosition();
@@ -48,6 +54,30 @@ void DuelEnvironment::Step(DuelAction& player1Action, DuelAction& player2Action,
         player2.UpdateGun(player1, player2Action.fire, (float)fixedDeltaTime);
         accumulatedTime = accumulatedTime - fixedDeltaTime;
     }
+    DuelStepResult result;
+    int player1DamageDealt = player2HealthBefore-player2.GetHealth();
+    float player1DamageReward = player1DamageDealt/player2.GetMaxHealth();
+    float player2SurvivalReward = 0.01f * elapsedTime;
+    result.player1Reward = player1DamageReward - player2SurvivalReward;
+    result.player2Reward = player2SurvivalReward - player1DamageReward;
+    if (wasPlayer2Alive && player2.GetHealth() <= 0)
+    {
+        result.player1Reward += 1.0f;
+        result.player2Reward -= 1.0f;
+        result.terminated = true;
+    }
+    if (episodeTime >= 20.0f && !result.terminated)
+    {
+        result.player1Reward -= 1.0f;
+        result.player2Reward += 1.0f;
+        result.truncated = true;
+    }
+    return result;
+    
+    
+    
+
+
 }
 
 DuelEnvironment::DuelEnvironment()
