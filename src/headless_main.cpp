@@ -32,8 +32,7 @@ int main()
         }
         std::cout << "Episode" << episode << ", steps: " << stepCount << ", P1 reward: "  << player1TotalReward << ", P2 reward: " << player2TotalReward << "\n";
 
-        return 0;
         
     }
-    
+    return 0;
 }

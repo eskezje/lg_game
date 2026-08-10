@@ -49,7 +49,7 @@ void DuelEnvironment::Reset(unsigned int seed)
 }
 
 DuelStepResult DuelEnvironment::Step(DuelAction& player1Action, DuelAction& player2Action, float elapsedTime) {
-    int player1HealthBefore = player1.GetHealth();
+    // int player1HealthBefore = player1.GetHealth();
     int player2HealthBefore = player2.GetHealth();
     bool wasPlayer2Alive = player2HealthBefore > 0;
     
@@ -117,4 +117,29 @@ Vector3 DuelEnvironment::RandomSpawnPosition()
 float DuelEnvironment::GetLerpAlpha()
 {
     return (float)(accumulatedTime/fixedDeltaTime);
+}
+
+DuelState DuelEnvironment::GetState() const
+{
+    DuelState state;
+
+    state.player1.position = player1.GetPosition();
+    state.player1.velocity = player1.GetVelocity();
+    state.player1.direction = player1.GetDirection();
+    state.player1.health = player1.GetHealth();
+    state.player1.maxHealth = player1.GetMaxHealth();
+    state.player1.gunCooldown = player1.GetGunCooldown();
+
+    state.player2.position = player2.GetPosition();
+    state.player2.velocity = player2.GetVelocity();
+    state.player2.direction = player2.GetDirection();
+    state.player2.health = player2.GetHealth();
+    state.player2.maxHealth = player2.GetMaxHealth();
+    state.player2.gunCooldown = player2.GetGunCooldown();
+
+    state.episodeTime = episodeTime;
+    state.episodeDuration = 20.0f;
+    state.arenaHalfSize = ArenaHalfSize;
+
+    return state;
 }

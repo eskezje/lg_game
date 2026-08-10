@@ -403,7 +403,7 @@ $(PROJECT_NAME): $(GAME_OBJS)
 	$(CC) -o $(PROJECT_NAME)$(EXT) $(GAME_OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
 
 headless: $(HEADLESS_OBJS)
-	$(CC) -o headless$(EXT) $(HEADLESS_OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM).
+	$(CC) -o headless$(EXT) $(HEADLESS_OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
 
 # Compile source files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)

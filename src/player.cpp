@@ -297,9 +297,14 @@ void Player::SetHealth(int health)
     playerHealth = std::clamp(health, 0, maxPlayerHealth);
 }
 
-int Player::GetMaxHealth()
+int Player::GetMaxHealth() const
 {
     return maxPlayerHealth;
+}
+
+float Player::GetGunCooldown() const
+{
+    return gunCooldown;
 }
 
 void Player::SetPrevEyePosition()

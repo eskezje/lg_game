@@ -19,6 +19,26 @@ struct DuelStepResult
     bool truncated = false;
 };
 
+struct PlayerState
+{
+    Vector3 position;
+    Vector3 velocity;
+    Vector3 direction;
+    float health = 0.0f;
+    int maxHealth = 0;
+    float gunCooldown = 0.0f;
+};
+
+struct DuelState
+{
+    PlayerState player1;
+    PlayerState player2;
+
+    float episodeTime = 0.0f;
+    float episodeDuration = 20.0f;
+    float arenaHalfSize = 0.0f;
+};
+
 class DuelEnvironment
 {
 public:
@@ -37,6 +57,7 @@ public:
         float elapsedTime);
 
     float GetLerpAlpha();
+    DuelState GetState() const;
 
 private:
     

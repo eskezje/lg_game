@@ -60,7 +60,8 @@ public:
     void shoot(Player &secondPlayer);
     void PlayerCollision(Player & secondPlayer);
     void SetHealth(int health);
-    int GetMaxHealth();
+    int GetMaxHealth() const;
+    float GetGunCooldown() const;
     void SetPrevEyePosition();
     Vector3 GetPrevEyePosition();
 
