@@ -3,6 +3,13 @@
 #include <array>
 #include "player.hpp"
 
+enum class RenderCameraMode
+{
+    Player1,
+    Player2,
+    TopDown
+};
+
 class Renderer
 {
 public:
@@ -13,6 +20,7 @@ public:
     void Render();
     void RenderPlayer(Player &player);
     void RenderPlayerHealth(Player &player);
+    void UpdateCamera(RenderCameraMode mode, Player& player1, Player& player2, float interpolationAlpha);
 
 private:
     void DrawGridPlane(float arenaHalfSize);

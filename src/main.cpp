@@ -54,6 +54,8 @@ int main()
     firstPlayer.SetPrevEyePosition();
     secondPlayer.SetPrevEyePosition();
 
+    RenderCameraMode cameraMode = RenderCameraMode::Player1;
+
     while (!exitWindow)
     {
         if (WindowShouldClose() || IsKeyPressed(KEY_ESCAPE)) {
@@ -71,19 +73,32 @@ int main()
             firstPlayer.SetPrevEyePosition();
             secondPlayer.SetPrevEyePosition();
         }
+        if (IsKeyPressed(KEY_ONE))
+        {
+            cameraMode = RenderCameraMode::Player1;
+        }
+        else if (IsKeyPressed(KEY_TWO))
+        {
+            cameraMode = RenderCameraMode::Player2;
+        }
+        else if (IsKeyPressed(KEY_THREE))
+        {
+            cameraMode = RenderCameraMode::TopDown;
+        }
 
         const float frameTime = std::min(GetFrameTime(),0.25f);
 
         DuelAction action1 = ReadPlayerAction();
         DuelAction action2{};
-        duelEnv.Step(action1, action2, frameTime);
-
-        Vector3 renderEyePosition = Vector3Lerp(firstPlayer.GetPrevEyePosition(), firstPlayer.GetEyePosition(), duelEnv.GetLerpAlpha());
-        
+        DuelStepResult result = duelEnv.Step(action1, action2, frameTime);
 
         const Vector3 playerPosition = firstPlayer.GetPosition();
-        
-        test_renderer.UpdateCameraPosTar(renderEyePosition, firstPlayer.GetDirection());
+
+        test_renderer.UpdateCamera(
+            cameraMode,
+            firstPlayer,
+            secondPlayer,
+            duelEnv.GetLerpAlpha());
         
 
         BeginDrawing();
@@ -92,11 +107,26 @@ int main()
         BeginMode3D(test_renderer.GetCamera());
 
         test_renderer.Render();
-        test_renderer.RenderPlayer(secondPlayer);
+
+        if (cameraMode != RenderCameraMode::Player1)
+        {
+            test_renderer.RenderPlayer(firstPlayer);
+        }
+        if (cameraMode != RenderCameraMode::Player2)
+        {
+            test_renderer.RenderPlayer(secondPlayer);
+        }
         
         EndMode3D();
 
-        test_renderer.RenderPlayerHealth(secondPlayer);
+        if (cameraMode != RenderCameraMode::Player1)
+        {
+            test_renderer.RenderPlayerHealth(firstPlayer);
+        }
+        if (cameraMode != RenderCameraMode::Player2)
+        {
+            test_renderer.RenderPlayerHealth(secondPlayer);
+        }
         
         DrawFPS(10, 10);
         const Vector3 velocity = firstPlayer.GetVelocity();
@@ -105,6 +135,9 @@ int main()
         TextFormat("Speed: %.2f", horizontalSpeed), 10, 35, 20, BLACK);
         DrawText(TextFormat("Position x:%.2f, y:%.2f, z:%.2f", playerPosition.x, playerPosition.y, playerPosition.z), 10, 55, 20, BLACK); 
         DrawText(TextFormat("Press R to reset"), 10, 75, 20, BLACK);
+        DrawText("Camera binds: [1] for Player1, [2] for Player2, [3] for Top Down", 10, 95, 20, BLACK);
+        DrawText(TextFormat("Player 1 Health: %d", firstPlayer.GetHealth()), 10, 115, 20, BLACK);
+        DrawText(TextFormat("Player 2 Health: %d", secondPlayer.GetHealth()), 10, 135, 20, BLACK);
 
         if (exitWindowRequested)
         {

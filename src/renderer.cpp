@@ -77,11 +77,11 @@ void Renderer::UnloadRendererTexture()
 
 void Renderer::DrawGridPlane(float arenaHalfSize)
 {
-    constexpr float gridSpacing = 0.2f;
+    constexpr float gridSpacing = 0.5f;
     const float arenaWidth = arenaHalfSize * 2.0f;
     const int gridSlices = static_cast<int>(std::round(arenaWidth / gridSpacing));
 
-    DrawPlane(Vector3{0.0f, -0.01f, 0.0f}, Vector2{arenaWidth, arenaWidth}, WHITE);
+    DrawPlane(Vector3{0.0f, -0.01f, 0.0f}, Vector2{arenaWidth, arenaWidth}, DARKGRAY);
     DrawGrid(gridSlices, gridSpacing);
 }
 
@@ -177,4 +177,36 @@ void Renderer::RenderPlayerHealth(Player &player)
         (int)(screenPosition.y),
         fontSize,
         RED);
+}
+
+void Renderer::UpdateCamera(RenderCameraMode mode, Player &player1, Player &player2, float interpolationAlpha)
+{
+    if (mode == RenderCameraMode::Player1)
+    {
+        Vector3 eyePosition = Vector3Lerp(player1.GetPrevEyePosition(), player1.GetEyePosition(), interpolationAlpha);
+        camera.up = Vector3{0.0f, 1.0f, 0.0f};
+        camera.fovy = 90.0f;
+        camera.projection = CAMERA_PERSPECTIVE;
+        UpdateCameraPosTar(eyePosition, player1.GetDirection());
+    }
+    else if (mode == RenderCameraMode::Player2)
+    {
+        Vector3 eyePosition = Vector3Lerp(player2.GetPrevEyePosition(), player2.GetEyePosition(), interpolationAlpha);
+        camera.up = Vector3{0.0f, 1.0f, 0.0f};
+        camera.fovy = 90.0f;
+        camera.projection = CAMERA_PERSPECTIVE;
+        UpdateCameraPosTar(eyePosition, player2.GetDirection());
+    }
+    else if (mode == RenderCameraMode::TopDown)
+    {
+        camera.position = Vector3{0.0f, 10.0f, 0.0f};
+        camera.target = Vector3{0.0f, 0.0f, 0.0f};
+
+        // vores kameras kigger lige nu langs Y aksen, så vores vector peger op
+        // så for topdown view skal vi have den ned af Z aksen i stedet for Y
+        camera.up = Vector3{0.0f, 0.0f, -1.0f};
+        camera.fovy = arenaHalfSize*2.5;
+        camera.projection = CAMERA_ORTHOGRAPHIC;
+    }
+    
 }

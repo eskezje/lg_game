@@ -7,7 +7,6 @@ namespace
 {
 float spawnLimit = 9.0f;
 float minimumSpawnDistance = 2.0f;
-float pi = 3.14159265358979323846f;
 }
 
 void DuelEnvironment::Reset()
@@ -43,6 +42,7 @@ DuelStepResult DuelEnvironment::Step(DuelAction& player1Action, DuelAction& play
     while (accumulatedTime >= fixedDeltaTime) {
         // something eye position 
         player1.SetPrevEyePosition();
+        player2.SetPrevEyePosition();
 
         // SimulateMovement
         player1.SimulateMovement(player1Action.input, (float)fixedDeltaTime, ArenaHalfSize);
@@ -56,7 +56,7 @@ DuelStepResult DuelEnvironment::Step(DuelAction& player1Action, DuelAction& play
     }
     DuelStepResult result;
     int player1DamageDealt = player2HealthBefore-player2.GetHealth();
-    float player1DamageReward = player1DamageDealt/player2.GetMaxHealth();
+    float player1DamageReward = (float)(player1DamageDealt) /(float)(player2.GetMaxHealth());
     float player2SurvivalReward = 0.01f * elapsedTime;
     result.player1Reward = player1DamageReward - player2SurvivalReward;
     result.player2Reward = player2SurvivalReward - player1DamageReward;
